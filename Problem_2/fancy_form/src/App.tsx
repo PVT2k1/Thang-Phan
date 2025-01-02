@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import './App.css';
+import { useEffect, useState } from 'react'
+import './App.css'
 
 function App() {
-  const [amount, setAmount] = useState(1);
-  const [fromCurrency, setFromCurrency] = useState('USD');
-  const [toCurrency, setToCurrency] = useState('EUR');
-  const [currencyList, setCurrencyList] = useState({});
-  const [convertedAmount, setConvertedAmount] = useState('');
+  const [amount, setAmount] = useState<number>(1);
+  const [fromCurrency, setFromCurrency] = useState<string>('USD');
+  const [toCurrency, setToCurrency] = useState<string>('EUR');
+  const [currencyList, setCurrencyList] = useState<any>({});
+  const [convertedAmount, setConvertedAmount] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -33,8 +33,8 @@ function App() {
   }
 
   useEffect(() => {
-    if (amount === '' || amount === '0')
-      return setConvertedAmount('');
+    if ( !amount || amount === 0)
+      return setConvertedAmount(0);
 
     if (fromCurrency === toCurrency)
       setConvertedAmount(amount);
@@ -42,20 +42,20 @@ function App() {
       Convert();
   }, [fromCurrency, toCurrency])
 
-  function TestInput(input) {
+  function TestInput(input: string) {
     const regex = /^[0-9.]+$/;
     return regex.test(input);
   }
 
-  function ChangeInput(e) {
-    if (e.target.value !== '' && !TestInput(e.target.value))
+  function ChangeInput(value: any) {
+    if (value && !TestInput(value.toString()))
       setErrorMessage('Wrong Input Format');
     else if (errorMessage !== '')
       setErrorMessage('');
 
-    setAmount(e.target.value);
-    if (convertedAmount !== '')
-      setConvertedAmount('');
+    setAmount(value);
+    if (convertedAmount)
+      setConvertedAmount(0);
   }
 
   return (
@@ -64,11 +64,11 @@ function App() {
 
       <label style={{ marginRight: '8px' }}>Amout to send:</label>
       <input
-        type='text'
+        type='number'
         value={amount}
         placeholder={fromCurrency}
         className={errorMessage !== '' ? 'error' : ''}
-        onChange={(e) => ChangeInput(e)}
+        onChange={(e) => ChangeInput(e.target.value)}
       />
 
       <label style={{ marginLeft: '8px', marginRight: '8px' }}>from</label>
@@ -92,10 +92,10 @@ function App() {
       </select>
 
       <button style={{ marginLeft: '8px' }} onClick={Convert}>CONFIRM SWAP</button>
-      {convertedAmount !== '' && <p>Amount to receive: {convertedAmount} {toCurrency}</p>}
+      {convertedAmount && <p>Amount to receive: {convertedAmount} {toCurrency}</p>}
       {errorMessage !== '' && <p style={{ color: '#d82b2b' }}>{errorMessage}</p>}
     </div>
   )
 }
 
-export default App;
+export default App
