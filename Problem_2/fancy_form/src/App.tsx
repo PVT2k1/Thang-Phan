@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import { getParamByParam } from 'iso-country-currency';
 
 function App() {
   const [amount, setAmount] = useState<number>(1);
@@ -33,67 +34,78 @@ function App() {
   }
 
   useEffect(() => {
-    if ( !amount || amount === 0)
+    if (!amount || amount === 0)
       return setConvertedAmount(0);
 
     if (fromCurrency === toCurrency)
       setConvertedAmount(amount);
     else
       Convert();
-  }, [fromCurrency, toCurrency])
-
-  function TestInput(input: string) {
-    const regex = /^[0-9.]+$/;
-    return regex.test(input);
-  }
+  }, [fromCurrency, toCurrency, amount])
 
   function ChangeInput(value: any) {
-    if (value && !TestInput(value.toString()))
-      setErrorMessage('Wrong Input Format');
-    else if (errorMessage !== '')
-      setErrorMessage('');
-
     setAmount(value);
-    if (convertedAmount)
-      setConvertedAmount(0);
   }
 
   return (
-    <div className='currency-converter'>
-      <h2 style={{ color: 'rgb(63,72,143)', textAlign: 'center' }}>Currency Swap Form</h2>
-
-      <label style={{ marginRight: '8px' }}>Amout to send:</label>
-      <input
-        type='number'
-        value={amount}
-        placeholder={fromCurrency}
-        className={errorMessage !== '' ? 'error' : ''}
-        onChange={(e) => ChangeInput(e.target.value)}
-      />
-
-      <label style={{ marginLeft: '8px', marginRight: '8px' }}>from</label>
-      <select
-        value={fromCurrency}
-        onChange={(e) => setFromCurrency(e.target.value)}
-      >
-        {Object.keys(currencyList).map((currency) => (
-          <option value={currency} key={currency}>{currency} - {currencyList[currency]}</option>
-        ))}
-      </select>
-
-      <label style={{ marginLeft: '8px', marginRight: '8px' }}>to</label>
-      <select
-        value={toCurrency}
-        onChange={(e) => setToCurrency(e.target.value)}
-      >
-        {Object.keys(currencyList).map((currency) => (
-          <option value={currency} key={currency}>{currency} - {currencyList[currency]}</option>
-        ))}
-      </select>
-
-      <button style={{ marginLeft: '8px' }} onClick={Convert}>CONFIRM SWAP</button>
-      {convertedAmount && <p>Amount to receive: {convertedAmount} {toCurrency}</p>}
-      {errorMessage !== '' && <p style={{ color: '#d82b2b' }}>{errorMessage}</p>}
+    <div className='flex flex-col bg-blue-100 p-4 gap-4 rounded-lg'>
+      <p className='text-2xl font-bold text-purple-900'>Currency Converter</p>
+      <div className='flex flex-col p-4 gap-4 bg-white rounded-lg'>
+        <div className='flex flex-col'>
+          <label className="mr-2 text-gray-500">Amout</label>
+          <div className='flex flex-row gap-2'>
+            <select
+              value={fromCurrency}
+              onChange={(e) => setFromCurrency(e.target.value)}
+              className='bg-gray-100 rounded-md'
+            >
+              {Object.keys(currencyList).map((currency) => (
+                <option value={currency} key={currency}>{currency}</option>
+              ))}
+            </select>
+            <input
+              type='number'
+              value={amount}
+              placeholder={fromCurrency}
+              className='bg-gray-100 rounded-md px-2'
+              onChange={(e) => ChangeInput(e.target.value)}
+            />
+            <div
+              className='flex p-1 rounded-full w-8 h-8 bg-blue-100 items-center justify-center'>
+              <p>{getParamByParam('currency', fromCurrency, 'symbol')}</p>
+            </div>
+          </div>
+        </div>
+        <div className='flex flex-col'>
+          <label className="mr-2 text-gray-500">Converted Amount</label>
+          <div className='flex flex-row gap-2'>
+            <select
+              value={toCurrency}
+              onChange={(e) => setToCurrency(e.target.value)}
+              className='bg-gray-100 rounded-md'
+            >
+              {Object.keys(currencyList).map((currency) => (
+                <option value={currency} key={currency}>{currency}</option>
+              ))}
+            </select>
+            <input
+              type='number'
+              value={convertedAmount}
+              disabled
+              className='bg-gray-100 rounded-md px-2'
+            />
+            <div
+              className='flex p-1 rounded-full w-8 h-8 bg-blue-100 items-center justify-center'>
+              <p>{getParamByParam('currency', toCurrency, 'symbol')}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className='flex flex-col p-4'>
+        <p className='text-lg font-bold text-purple-800'>Indicate Currency</p>
+        <p>{fromCurrency}: {currencyList[fromCurrency]}</p>
+        {fromCurrency !== toCurrency && <p>{toCurrency}: {currencyList[toCurrency]}</p>}
+      </div>
     </div>
   )
 }
