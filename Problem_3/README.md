@@ -13,3 +13,4 @@
 
     attribute 'blockchain' is not in the interface 'WalletBalance'
 
+4. the dependency of useMemo hook should be [balances] (delete 'prices'). Because 'prices' does not used in the callback.
