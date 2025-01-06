@@ -1,10 +1,9 @@
 interface WalletBalance {
+    blockchain: any;
     currency: string;
     amount: number;
   }
-  interface FormattedWalletBalance {
-    currency: string;
-    amount: number;
+  interface FormattedWalletBalance extends WalletBalance {
     formatted: string;
   }
   
@@ -36,7 +35,7 @@ interface WalletBalance {
     const sortedBalances = useMemo(() => {
       return balances.filter((balance: WalletBalance) => {
             const balancePriority = getPriority(balance.blockchain);
-            if (lhsPriority > -99) {
+            if (balancePriority > -99) {
                if (balance.amount <= 0) {
                  return true;
                }
@@ -51,7 +50,7 @@ interface WalletBalance {
               return 1;
             }
       });
-    }, [balances, prices]);
+    }, [balances]);
   
     const formattedBalances = sortedBalances.map((balance: WalletBalance) => {
       return {
@@ -60,7 +59,7 @@ interface WalletBalance {
       }
     })
   
-    const rows = sortedBalances.map((balance: FormattedWalletBalance, index: number) => {
+    const rows = formattedBalances.map((balance: FormattedWalletBalance, index: number) => {
       const usdValue = prices[balance.currency] * balance.amount;
       return (
         <WalletRow 
